@@ -1,18 +1,15 @@
 # 🪐 Exoplanet Hunter — NASA Kepler Data Analysis
 
-**Google Advanced Data Analytics Certificate — Capstone Project**
-
-[![Python](https://img.shields.io/badge/Python-3.10-blue)](https://python.org)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3-orange)](https://scikit-learn.org)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+**Dataset:** NASA Kepler Objects of Interest (KOI) — DR25 Catalog  
+**Tools:** Python · Pandas · NumPy · Matplotlib · Seaborn · Scikit-learn
 
 ---
 
 ## Overview
 
-Advanced analytics project applying statistical analysis, machine learning, and data visualization to the NASA Kepler Space Telescope dataset — 9,564 Kepler Objects of Interest (KOI) from the DR25 catalog.
+Analysis of 9,564 Kepler Objects of Interest from the NASA DR25 catalog. The project covers statistical comparison of confirmed planets vs false positives, habitable zone identification, and binary classification using only physical observational parameters.
 
-**Central question:** *What physical and orbital characteristics distinguish confirmed exoplanets from false positives, and can we classify unconfirmed candidates?*
+**Central question:** can we distinguish confirmed exoplanets from false positives using only raw physical and orbital measurements — without using NASA's own classification scores?
 
 ---
 
@@ -31,14 +28,31 @@ Advanced analytics project applying statistical analysis, machine learning, and 
 
 ---
 
+## Key Results
+
+| Model | AUC | Balanced Accuracy |
+|-------|-----|-------------------|
+| Logistic Regression | ~0.91 | ~0.84 |
+| Random Forest | ~0.94 | ~0.86 |
+
+**Important methodological note:** `koi_score` and the `koi_fpflag_*` columns were deliberately excluded from the model. `koi_score` is NASA's own classification confidence — using it to predict the classification is circular reasoning (data leakage). The fp_flags are also derived judgments, not raw measurements. The models here classify using only physical and orbital observables.
+
+An earlier version of this analysis achieved AUC ~0.999 by including `koi_score`. That result is methodologically wrong and has been corrected.
+
+**Other findings:**
+- Transit depth (`koi_depth`), planet radius (`koi_prad`) and impact parameter (`koi_impact`) are the strongest physical separators
+- 14 confirmed planets fall within conservative habitable zone criteria (200K–400K equilibrium temperature, 0.25–4x Earth insolation flux)
+- ~30% of the 2,202 candidates are classified as likely planets by the corrected model
+
+---
+
 ## Structure
 
 ```
 kepler-exoplanet-analysis/
-│
-├── kepler_exoplanet_analysis.ipynb   # Main analysis notebook
-├── kepler_koi.csv                    # Dataset (DR25 statistics)
-├── README.md
+├── kepler_exoplanet_analysis.ipynb   — main analysis notebook
+├── kepler_koi.csv                    — NASA KOI dataset (DR25)
+├── requirements.txt
 └── figures/
     ├── fig1_distribution.png
     ├── fig2_parameters.png
@@ -47,31 +61,6 @@ kepler-exoplanet-analysis/
     ├── fig5_flags.png
     └── fig6_model_evaluation.png
 ```
-
----
-
-## Key Results
-
-| Model | AUC | Precision | Recall |
-|-------|-----|-----------|--------|
-| Logistic Regression | ~0.999 | 0.98 | 0.97 |
-| Random Forest | ~0.999 | 0.99 | 0.98 |
-
-- **14 potentially habitable-zone confirmed planets** identified
-- **~30-35% of candidates** classified as likely planets by the model
-- **koi_score** (NASA's disposition confidence) is the strongest single predictor
-- Transit depth and planet radius are the clearest physical separators
-
----
-
-## Techniques Applied
-
-- Exploratory Data Analysis (EDA)
-- Statistical hypothesis testing (Mann-Whitney U)
-- Feature engineering (SNR proxy, orbital compactness, radius ratio)
-- Binary classification (Logistic Regression, Random Forest)
-- ROC/AUC evaluation
-- Feature importance analysis
 
 ---
 
@@ -92,4 +81,5 @@ jupyter notebook kepler_exoplanet_analysis.ipynb
 
 ---
 
-*Part of the Google Advanced Data Analytics Professional Certificate portfolio*
+*Part of a series of data science explorations on public scientific datasets.*  
+*Previous: Global Seismic Activity (USGS + NOAA) · UFO Sightings (NUFORC) · Quantum Navigation & Magnetic Disruption (IGRF-14)*
